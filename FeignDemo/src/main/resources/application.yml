@@ -1,0 +1,21 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:4567/eureka/
+server:
+  port: 1236
+spring:
+  application:
+    name: feign
+#feign:
+#   hystrix:
+#     enabled: true
+#hystrix:
+#   command: 
+#     default: 
+#       execution: 
+#        isolation:
+#         thread: 
+#          timeoutInMilliseconds: 4000
+     
+
