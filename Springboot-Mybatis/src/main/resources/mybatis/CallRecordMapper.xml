@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.CallRecordMapper">
+
+    <!--实体映射-->
+    <resultMap id="BaseResultMap" type="com.example.demo.dto.CallDto">
+        <id property="clientID" column="clientID"/>
+        <result property="clientName" column="clientName"/>
+        <result property="callTime" column="callTime"/>
+        <result property="callDura" column="callDura"/>
+        <result property="callPerson" column="callPerson"/>
+    </resultMap>
+
+    <delete id="refreshList">
+        delete from callRecord
+    </delete>
+
+    <select id="getAllCallRecord" resultMap="BaseResultMap" resultType="com.example.demo.dto.CallDto">
+        select * from callRecord
+    </select>
+
+    <select id="getCallRecordByID" resultMap="BaseResultMap" parameterType="com.example.demo.dto.RecordDto">
+        select * from callRecord where clientID = #{clientID}
+        <if test="custName != null and custName != ''">
+            and callperson like CONCAT('%',#{custName},'%')
+        </if>
+        <if test="(startTime != null and endTime != null) and (startTime != '' and endTime != '')">
+            and callTime between #{startTime} and #{endTime}
+        </if>
+        <if test="queryMonth != null">
+            and callTime like CONCAT(#{queryMonth} , '%')
+        </if>
+        <if test="(pageSize != null and index != null) and (pageSize != 0 and index != 0)">
+            limit ${(index-1) * pageSize} , ${index * pageSize}
+        </if>
+    </select>
+
+    <select id="getCallRecordByIDWithoutLimit" resultMap="BaseResultMap" parameterType="com.example.demo.dto.RecordDto">
+        select * from callRecord where clientID = #{clientID}
+        <if test="custName != null and custName != ''">
+            and callperson like CONCAT('%',#{custName},'%')
+        </if>
+        <if test="(startTime != null and endTime != null) and (startTime != '' and endTime != '')">
+            and callTime between #{startTime} and #{endTime}
+        </if>
+        <if test="queryMonth != null">
+            and callTime like CONCAT(#{queryMonth} , '%')
+        </if>
+    </select>
+
+    <insert id="addCallRecord" parameterType="com.example.demo.dto.CallDto">
+        insert into callRecord (clientID , clientName , callTime , callDura , callPerson)
+        values
+        <foreach collection="list" item="item" separator=",">
+        (#{item.clientID} , #{item.clientName} , #{item.callTime} , #{item.callDura} , #{item.callPerson})
+        </foreach>
+    </insert>
+</mapper>

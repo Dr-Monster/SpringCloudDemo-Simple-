@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.VisitRecordMapper">
+
+    <!--实体映射-->
+    <resultMap id="BaseResultMap" type="com.example.demo.dto.VisitDto">
+        <id property="clientID" column="clientID"/>
+        <result property="clientName" column="clientName"/>
+        <result property="visitTime" column="visitTime"/>
+        <result property="visitArea" column="visitArea"/>
+        <result property="visitPerson" column="visitPerson"/>
+        <result property="visitTag" column="visitTag"/>
+    </resultMap>
+
+    <select id="getAllVisitRecord" resultType="com.example.demo.dto.VisitDto">
+        select * from visitRecord
+    </select>
+
+    <select id="getVisitRecordByID" parameterType="com.example.demo.dto.RecordDto" resultType="com.example.demo.dto.VisitDto">
+        select * from visitRecord where clientID = #{clientID}
+        <if test="custName != null and custName != ''">
+            and visitperson like CONCAT('%',#{custName},'%')
+        </if>
+        <if test="(startTime != null and endTime != null) and (startTime != '' and endTime != '')">
+            and visitTime between #{startTime} and #{endTime}
+        </if>
+        <if test="visitTag != null">
+            and visitTag = #{visitTag}
+        </if>
+        <if test="queryMonth != null">
+            and visitTime like CONCAT(#{queryMonth} , '%')
+        </if>
+        <if test="(pageSize != null and index != null) and (pageSize != 0 and index != 0)">
+            limit ${(index-1) * pageSize} , ${index * pageSize}
+        </if>
+    </select>
+
+    <select id="getVisitRecordByIDWithoutLimit" parameterType="com.example.demo.dto.RecordDto" resultType="com.example.demo.dto.VisitDto">
+        select * from visitRecord where clientID = #{clientID}
+        <if test="custName != null and custName != ''">
+            and visitperson like CONCAT('%',#{custName},'%')
+        </if>
+        <if test="(startTime != null and endTime != null) and (startTime != '' and endTime != '')">
+            and visitTime between #{startTime} and #{endTime}
+        </if>
+        <if test="queryMonth != null">
+            and visitTime like CONCAT(#{queryMonth} , '%')
+        </if>
+        <if test="visitTag != null">
+            and visitTag = #{visitTag}
+        </if>
+    </select>
+
+    <insert id="addVisitRecord" parameterType="com.example.demo.dto.VisitDto">
+        insert into visitRecord (clientID , clientName , visitTime , visitArea , visitPerson , visitTag)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.clientID} , #{item.clientName} , #{item.visitTime} , #{item.visitArea} , #{item.visitPerson} , #{item.visitTag})
+        </foreach>
+    </insert>
+
+
+</mapper>
